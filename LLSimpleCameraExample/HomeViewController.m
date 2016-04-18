@@ -38,6 +38,7 @@
                                                  position:LLCameraPositionRear
                                              videoEnabled:YES];
     self.camera.videoQuality = AVCaptureSessionPresetMedium;
+    self.camera.maxRecordedFileSize = 1024 * 1024 * 15;
     
     // attach to a view controller
     [self.camera attachToViewController:self withFrame:CGRectMake(0, 0, screenRect.size.width, screenRect.size.height)];
