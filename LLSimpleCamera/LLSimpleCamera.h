@@ -55,6 +55,12 @@ typedef enum : NSUInteger {
 @property (copy, nonatomic) NSString *cameraQuality;
 
 /**
+ * Camera video quality, set a constants prefixed with AVCaptureSessionPreset.
+ * Make sure to call before calling -(void)initialize method, otherwise it would be late.
+ */
+@property (copy, nonatomic) NSString *videoQuality;
+
+/**
  * Camera flash mode.
  */
 @property (nonatomic, readonly) LLCameraFlash flash;

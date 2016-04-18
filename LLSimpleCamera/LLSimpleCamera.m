@@ -68,6 +68,7 @@ NSString *const LLSimpleCameraErrorDomain = @"LLSimpleCameraErrorDomain";
                 position:(LLCameraPosition)position
             videoEnabled:(BOOL)videoEnabled
 {
+    _videoQuality = AVCaptureSessionPresetMedium;
     _cameraQuality = quality;
     _position = position;
     _fixOrientationAfterCapture = NO;
@@ -361,6 +362,8 @@ NSString *const LLSimpleCameraErrorDomain = @"LLSimpleCameraErrorDomain";
 
 - (void)startRecordingWithOutputUrl:(NSURL *)url
 {
+    self.session.sessionPreset = self.videoQuality;
+    
     // check if video is enabled
     if(!self.videoEnabled) {
         NSError *error = [NSError errorWithDomain:LLSimpleCameraErrorDomain
@@ -409,6 +412,7 @@ NSString *const LLSimpleCameraErrorDomain = @"LLSimpleCameraErrorDomain";
 
 - (void)captureOutput:(AVCaptureFileOutput *)captureOutput didFinishRecordingToOutputFileAtURL:(NSURL *)outputFileURL fromConnections:(NSArray *)connections error:(NSError *)error
 {
+    self.session.sessionPreset = self.cameraQuality;
     self.recording = NO;
     [self enableTorch:NO];
     
