@@ -85,6 +85,11 @@ typedef enum : NSUInteger {
 @property (nonatomic, assign) int64_t maxRecordedFileSize;
 
 /**
+ * Callback for oversize video file
+ */
+@property (nonatomic, copy) void (^didRecord)(LLSimpleCamera *camera, NSURL *outputFileUrl, NSError *error);
+
+/**
  * Boolean value to indicate if the camera is recording a video at the current moment.
  */
 @property (nonatomic, getter=isRecording) BOOL recording;
