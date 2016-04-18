@@ -80,6 +80,11 @@ typedef enum : NSUInteger {
 @property (nonatomic, getter=isVideoEnabled) BOOL videoEnabled;
 
 /**
+ * int64_t value to set maximum video file size
+ */
+@property (nonatomic, assign) int64_t maxRecordedFileSize;
+
+/**
  * Boolean value to indicate if the camera is recording a video at the current moment.
  */
 @property (nonatomic, getter=isRecording) BOOL recording;
