@@ -36,6 +36,11 @@ typedef enum : NSUInteger {
     LLSimpleCameraErrorCodeVideoNotEnabled = 13
 } LLSimpleCameraErrorCode;
 
+@protocol LLSimpleCameraDelegate <NSObject>
+@optional
+- (void) changedSession: (BOOL)isRunning;
+@end
+
 @interface LLSimpleCamera : UIViewController
 
 /**
@@ -126,6 +131,10 @@ typedef enum : NSUInteger {
  * however you want to take the device rotation into account no matter what. Disabled by default.
  */
 @property (nonatomic) BOOL useDeviceOrientation;
+
+@property (nonatomic, readonly) BOOL isSessionRunning;
+
+@property (weak, nonatomic) id<LLSimpleCameraDelegate> delegate;
 
 /**
  * Use this method to request camera permission before initalizing LLSimpleCamera.
