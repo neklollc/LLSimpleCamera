@@ -176,8 +176,9 @@ static void * SessionRunningContext = &SessionRunningContext;
 {
     if ( context == SessionRunningContext ) {
         BOOL isSessionRunning = [change[NSKeyValueChangeNewKey] boolValue];
+        __weak LLSimpleCamera *weakSelf = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.delegate changedSession: isSessionRunning];
+            [weakSelf.delegate changedSession: isSessionRunning];
         });
     }
     else {
