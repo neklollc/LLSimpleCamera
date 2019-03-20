@@ -215,32 +215,13 @@ static void * SessionRunningContext = &SessionRunningContext;
 - (void)start
 {
     [LLSimpleCamera requestCameraPermission:^(BOOL granted) {
-        if(granted) {
-            // request microphone permission if video is enabled
-            if(self.videoEnabled) {
-                [LLSimpleCamera requestMicrophonePermission:^(BOOL granted) {
-                    if (!granted) {
-                        NSError *error = [NSError errorWithDomain:LLSimpleCameraErrorDomain
-                                                             code:LLSimpleCameraErrorCodeMicrophonePermission
-                                                         userInfo:nil];
-                        if (self.onError) {
-                            self.onError(self, error);
-                        }
-                    }
-                    
-                    self.isAudioEnabled = granted;
-                    [self initialize];
-                }];
-            }
-            else {
-                [self initialize];
-            }
-        }
-        else {
+        if (granted) {
+            [self initialize];
+        } else {
             NSError *error = [NSError errorWithDomain:LLSimpleCameraErrorDomain
                                                  code:LLSimpleCameraErrorCodeCameraPermission
                                              userInfo:nil];
-            if(self.onError) {
+            if (self.onError) {
                 self.onError(self, error);
             }
         }
