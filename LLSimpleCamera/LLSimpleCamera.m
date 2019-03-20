@@ -27,6 +27,8 @@
 @property (nonatomic, assign) CGFloat beginGestureScale;
 @property (nonatomic, assign) CGFloat effectiveScale;
 @property (nonatomic, assign) BOOL started;
+
+@property (nonatomic, assign) BOOL isAudioEnabled;
 @end
 
 NSString *const LLSimpleCameraErrorDomain = @"LLSimpleCameraErrorDomain";
@@ -217,17 +219,17 @@ static void * SessionRunningContext = &SessionRunningContext;
             // request microphone permission if video is enabled
             if(self.videoEnabled) {
                 [LLSimpleCamera requestMicrophonePermission:^(BOOL granted) {
-                    if(granted) {
-                        [self initialize];
-                    }
-                    else {
+                    if (!granted) {
                         NSError *error = [NSError errorWithDomain:LLSimpleCameraErrorDomain
                                                              code:LLSimpleCameraErrorCodeMicrophonePermission
                                                          userInfo:nil];
-                        if(self.onError) {
+                        if (self.onError) {
                             self.onError(self, error);
                         }
                     }
+                    
+                    self.isAudioEnabled = granted;
+                    [self initialize];
                 }];
             }
             else {
@@ -306,7 +308,7 @@ static void * SessionRunningContext = &SessionRunningContext;
         }
         
         // add audio if video is enabled
-        if(self.videoEnabled) {
+        if(self.videoEnabled && self.isAudioEnabled) {
             _audioCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio];
             _audioDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:_audioCaptureDevice error:&error];
             if (!_audioDeviceInput) {
@@ -419,7 +421,7 @@ static void * SessionRunningContext = &SessionRunningContext;
     self.session.sessionPreset = self.videoQuality;
     
     // check if video is enabled
-    if(!self.videoEnabled) {
+    if(!self.videoEnabled || !self.isAudioEnabled) {
         NSError *error = [NSError errorWithDomain:LLSimpleCameraErrorDomain
                                              code:LLSimpleCameraErrorCodeVideoNotEnabled
                                          userInfo:nil];
@@ -451,7 +453,7 @@ static void * SessionRunningContext = &SessionRunningContext;
 
 - (void)stopRecording:(void (^)(LLSimpleCamera *camera, NSURL *outputFileUrl, NSError *error))completionBlock
 {
-    if(!self.videoEnabled) {
+    if(!self.videoEnabled  || !self.isAudioEnabled) {
         return;
     }
     
