@@ -216,6 +216,7 @@ static void * SessionRunningContext = &SessionRunningContext;
 {
     [LLSimpleCamera requestCameraPermission:^(BOOL granted) {
         if (granted) {
+            self.isAudioEnabled = [AVAudioSession sharedInstance].recordPermission == AVAudioSessionRecordPermissionGranted;
             [self initialize];
         } else {
             NSError *error = [NSError errorWithDomain:LLSimpleCameraErrorDomain
