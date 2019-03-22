@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "LLSimpleCamera"
-  s.version      = "4.2.1"
+  s.version      = "4.2.2"
   s.summary      = "LLSimpleCamera: A simple customizable camera - video recorder control."
   s.description  = <<-DESC
                    LLSimpleCamera is a library for creating a customized camera screens similar to snapchat's. You don't have to present the camera in a new view controller. You can capture images or record videos very easily.
