@@ -216,7 +216,6 @@ static void * SessionRunningContext = &SessionRunningContext;
 {
     [LLSimpleCamera requestCameraPermission:^(BOOL granted) {
         if (granted) {
-            self.isAudioEnabled = [AVAudioSession sharedInstance].recordPermission == AVAudioSessionRecordPermissionGranted;
             [self initialize];
         } else {
             NSError *error = [NSError errorWithDomain:LLSimpleCameraErrorDomain
@@ -290,18 +289,8 @@ static void * SessionRunningContext = &SessionRunningContext;
         }
         
         // add audio if video is enabled
-        if(self.videoEnabled && self.isAudioEnabled) {
-            _audioCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio];
-            _audioDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:_audioCaptureDevice error:&error];
-            if (!_audioDeviceInput) {
-                if(self.onError) {
-                    self.onError(self, error);
-                }
-            }
-            
-            if([self.session canAddInput:_audioDeviceInput]) {
-                [self.session addInput:_audioDeviceInput];
-            }
+        if(self.videoEnabled) {
+            [self addAudioStreamIfNeeded];
             
             _movieFileOutput = [[AVCaptureMovieFileOutput alloc] init];
             if (self.maxRecordedFileSize > 0) {
@@ -321,6 +310,8 @@ static void * SessionRunningContext = &SessionRunningContext;
         NSDictionary *outputSettings = [[NSDictionary alloc] initWithObjectsAndKeys: AVVideoCodecJPEG, AVVideoCodecKey, nil];
         [self.stillImageOutput setOutputSettings:outputSettings];
         [self.session addOutput:self.stillImageOutput];
+    } else {
+        [self addAudioStreamIfNeeded];
     }
     
     //if we had disabled the connection on capture, re-enable it
@@ -336,6 +327,28 @@ static void * SessionRunningContext = &SessionRunningContext;
 {
     self.started = false;
     [self.session stopRunning];
+}
+
+/// As we can run preview without audio we should check audioDeviceInput and set if it empty before start recording
+- (void)addAudioStreamIfNeeded {
+    self.isAudioEnabled = [AVAudioSession sharedInstance].recordPermission == AVAudioSessionRecordPermissionGranted;
+    if (self.videoEnabled && self.isAudioEnabled) {
+        if (!_audioCaptureDevice && !_audioDeviceInput) {
+            NSError *error = nil;
+            
+            _audioCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio];
+            _audioDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:_audioCaptureDevice error:&error];
+            if (!_audioDeviceInput) {
+                if(self.onError) {
+                    self.onError(self, error);
+                }
+            }
+            
+            if ([self.session canAddInput:_audioDeviceInput]) {
+                [self.session addInput:_audioDeviceInput];
+            }
+        }
+    }
 }
 
 
