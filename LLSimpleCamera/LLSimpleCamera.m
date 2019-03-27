@@ -283,7 +283,7 @@ static void * SessionRunningContext = &SessionRunningContext;
             return;
         }
         
-        if([self.session canAddInput:_videoDeviceInput]) {
+        if ([self.session canAddInput:_videoDeviceInput]) {
             [self.session  addInput:_videoDeviceInput];
             self.captureVideoPreviewLayer.connection.videoOrientation = [self orientationForConnection];
         }
@@ -292,7 +292,7 @@ static void * SessionRunningContext = &SessionRunningContext;
         if(self.videoEnabled) {
             [self addAudioStreamIfNeeded];
             
-            _movieFileOutput = [[AVCaptureMovieFileOutput alloc] init];
+            _movieFileOutput = [AVCaptureMovieFileOutput new];
             if (self.maxRecordedFileSize > 0) {
                 _movieFileOutput.maxRecordedFileSize = self.maxRecordedFileSize;
             }
@@ -306,7 +306,7 @@ static void * SessionRunningContext = &SessionRunningContext;
         self.whiteBalanceMode = AVCaptureWhiteBalanceModeContinuousAutoWhiteBalance;
         
         // image output
-        self.stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
+        self.stillImageOutput = [AVCaptureStillImageOutput new];
         NSDictionary *outputSettings = [[NSDictionary alloc] initWithObjectsAndKeys: AVVideoCodecJPEG, AVVideoCodecKey, nil];
         [self.stillImageOutput setOutputSettings:outputSettings];
         [self.session addOutput:self.stillImageOutput];
@@ -420,25 +420,26 @@ static void * SessionRunningContext = &SessionRunningContext;
         NSError *error = [NSError errorWithDomain:LLSimpleCameraErrorDomain
                                              code:LLSimpleCameraErrorCodeVideoNotEnabled
                                          userInfo:nil];
-        if(self.onError) {
+        if (self.onError) {
             self.onError(self, error);
         }
         
         return;
     }
     
-    if(self.flash == LLCameraFlashOn) {
+    if (self.flash == LLCameraFlashOn) {
         [self enableTorch:YES];
     }
     
     // set video orientation
-    for(AVCaptureConnection *connection in [self.movieFileOutput connections]) {
+    for (AVCaptureConnection *connection in [self.movieFileOutput connections]) {
         for (AVCaptureInputPort *port in [connection inputPorts]) {
             // get only the video media types
             if ([[port mediaType] isEqual:AVMediaTypeVideo]) {
                 if([connection isVideoOrientationSupported]) {
                     [connection setVideoOrientation:[self orientationForConnection]];
                 }
+                [self.movieFileOutput setOutputSettings:@{AVVideoCodecKey:AVVideoCodecH264} forConnection:connection];
             }
         }
     }
