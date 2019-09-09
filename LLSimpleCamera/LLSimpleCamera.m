@@ -721,6 +721,8 @@ static void * SessionRunningContext = &SessionRunningContext;
     
     _position = cameraPosition;
     
+    self.session.sessionPreset = self.cameraQuality;
+    
     [self.session addInput:videoInput];
     [self.session commitConfiguration];
     
