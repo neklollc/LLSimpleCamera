@@ -326,7 +326,9 @@ static void * SessionRunningContext = &SessionRunningContext;
 - (void)stop
 {
     self.started = false;
-    [self.session stopRunning];
+    if (self.session.isRunning) {
+        [self.session stopRunning];
+    }
 }
 
 /// As we can run preview without audio we should check audioDeviceInput and set if it empty before start recording
